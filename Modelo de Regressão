@@ -1,53 +1,66 @@
-# Importando bibliotecas
+# Importando as bibliotecas necessárias
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
-# Classe do modelo de Regressão Logística
+# modelo de Regressão Logística
 class ModeloRegressaoLogistica:
+    # Método de inicialização da classe
     def __init__(self):
-        self.df = None
-        self.model = None
+        self.df = None  # DataFrame 
+        self.model = None  # A instância do modelo de Regressão Logística
+        # Atributos dos conjuntos de treino e teste
         self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
 
+    # Método para carregar o dataset
     def CarregarDataset(self, path):
-        # nomes das colunas
+        # Definindo os nomes das colunas 
         names = ['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm', 'Species']
+        # Lendo o arquivo CSV 
         self.df = pd.read_csv(path, names=names)
 
+    # Método para tratar os dados
     def TratamentoDeDados(self):
-        # Removendo valores ausentes
+        # Removendo valores ausentes (
         self.df.dropna(inplace=True)
         
-        # variáveis independentes (X) e dependentes (y)
-        X = self.df.drop(columns='Species')
-        y = self.df['Species']
+        # as variáveis independentes (X) e a variável dependente (y)
+  
+        X = self.df.drop(columns='Species')  # Remove a coluna 'Species' 
+        y = self.df['Species']  # A variável 'Species'
         
-        # Dados do modelo
+        #  conjunto de treino e conjunto de teste 
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+      
 
+    #  modelo de Regressão Logística
     def Treinamento(self):
-        # Treinamento do modelo
+        # 
         print("Treinando com o modelo de Regressão Logística...")
-        self.model = LogisticRegression(max_iter=200, random_state=42)
-        self.model.fit(self.X_train, self.y_train)
+        self.model = LogisticRegression(max_iter=200, random_state=42)  # iterações do algoritmo
+        self.model.fit(self.X_train, self.y_train)  # Treinando o modelo 
 
+    # Método de Teste
     def Teste(self):
-        # previsões Do modelo treinado
+        # As previsões do modelo treinado
         y_pred = self.model.predict(self.X_test)
         
-        # acurácia do modelo
-        acertos = sum(y_pred == self.y_test)
-        total = len(self.y_test)
-        acuracia = (acertos / total) * 100
-        
-        # previsões e a acurácia
+        # Calculando a acurácia do modelo
+        acertos = sum(y_pred == self.y_test)  #Os acertos
+        total = len(self.y_test)  # o  conjunto de teste
+        acuracia = (acertos / total) * 100  # Calculando a acurácia e
+        # Exibindo as previsões do modelo 
         print("Previsões do modelo de Regressão Logística:", y_pred[:5])
         print("Valores reais:", self.y_test[:5].values)
         print(f"Acurácia do modelo de Regressão Logística: {acuracia:.2f}%")
 
+
+        
+caminho_dataset = '/content/iris.csv'
+
+    # Executando o modelo de Regressão Logística 
     def Executar(self, path):
-        # etapas do modelo
+       
         self.CarregarDataset(path)
         self.TratamentoDeDados()
         self.Treinamento()
@@ -55,15 +68,5 @@ class ModeloRegressaoLogistica:
         print("\nFinalizando execução do modelo de Regressão Logística.")
 
 
-
-# Executando o modelo de Regressão Logística
-modelo_rl = ModeloRegressaoLogistica()
-modelo_rl.Executar(caminho_dataset)
-
-
-#Treinando com o modelo de Regressão Logística...
-Previsões do modelo de Regressão Logística: ['Iris-setosa' 'Iris-versicolor' 'Iris-setosa' 'Iris-virginica' 'Iris-setosa']
-Valores reais: ['Iris-setosa' 'Iris-versicolor' 'Iris-setosa' 'Iris-virginica' 'Iris-setosa']
+#Teste
 Acurácia do modelo de Regressão Logística: 97.50%
-
-Finalizando execução do modelo de Regressão Logística.
