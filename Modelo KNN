@@ -1,0 +1,80 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
+
+# Classe Base
+class ModeloBase:
+    # Método de inicialização que recebe o caminho do dataset (path)
+    def __init__(self, path):
+        # Atributos da classe
+        self.df = None  # DataFrame que armazenará o dataset
+        self.path = path  # Caminho do arquivo CSV com os dados
+        self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None  # Dados de treino e teste
+
+    # Método para carregar o dataset a partir de um arquivo CSV
+    def CarregarDataset(self):
+        # Definindo os nomes das colunas do dataset
+        names = ['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm', 'Species']
+        # Carregando o dataset em um DataFrame
+        self.df = pd.read_csv(self.path, names=names)
+        print("Dataset carregado com sucesso.") 
+
+    # Método de treino e teste
+    def TratamentoDeDados(self):
+        # Exibindo as primeiras linhas do dataset para visualização inicial
+        print("Visualização inicial do dataset:\n", self.df.head())
+
+        # Verifica se existem valores que faltam
+        if self.df.isnull().sum().any():
+            self.df.dropna(inplace=True)  # Remove o valor
+            print("Dados faltantes removidos.")  
+        # variáveis independentes (X) das dependentes (y)
+        X = self.df.drop(columns='Species')  # Remove a coluna 'Species' 
+        y = self.df['Species'] 
+
+        # Divide os dados do conjunto de treino e  teste 
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        print("Dados divididos em treino e teste.") 
+
+# Classe ModeloKNN 
+class ModeloKNN(ModeloBase):
+    # Método de inicialização
+    def __init__(self, path, n_neighbors=3):
+      
+        super().__init__(path)
+        # Inicializa o modelo KNN 
+        self.model = KNeighborsClassifier(n_neighbors=n_neighbors)
+
+    # Método para realizar o treinamento 
+    def Treinamento(self):
+        print("Treinando modelo KNN...") 
+        # Realiza a validação cruzada (cross-validation) 
+        scores = cross_val_score(self.model, self.X_train, self.y_train, cv=5)
+        # Exibe a acurácia média obtida na validação cruzada
+        print(f"Acurácia média do modelo KNN (validação cruzada): {scores.mean():.2f}%")
+
+    # Método para testar o modelo KNN 
+    def Teste(self):
+        # Treina o modelo com os dados 
+        self.model.fit(self.X_train, self.y_train)
+        # Faz previsões 
+        y_pred = self.model.predict(self.X_test)
+        # Calcula a acurácia
+        acuracia = accuracy_score(self.y_test, y_pred)
+        # Exibe a acurácia do modelo 
+        print(f"Acurácia do modelo KNN no conjunto de teste: {acuracia:.2f}%")
+
+# Caminho do dataset (ajuste o caminho para o seu arquivo CSV no Google Colab ou local)
+caminho_dataset = '/content/iris.csv'
+
+# Executando o modelo KNN
+modelo_knn = ModeloKNN(caminho_dataset)  
+modelo_knn.CarregarDataset()  
+modelo_knn.TratamentoDeDados() 
+modelo_knn.Treinamento()  
+modelo_knn.Teste()  
+
+#Teste
+Treinando modelo KNN...
+Acurácia média do modelo KNN (validação cruzada): 0.97
