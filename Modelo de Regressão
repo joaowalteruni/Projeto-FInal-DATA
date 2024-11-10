@@ -1,0 +1,69 @@
+# Importando bibliotecas
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
+# Classe do modelo de Regressão Logística
+class ModeloRegressaoLogistica:
+    def __init__(self):
+        self.df = None
+        self.model = None
+        self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
+
+    def CarregarDataset(self, path):
+        # nomes das colunas
+        names = ['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm', 'Species']
+        self.df = pd.read_csv(path, names=names)
+
+    def TratamentoDeDados(self):
+        # Removendo valores ausentes
+        self.df.dropna(inplace=True)
+        
+        # variáveis independentes (X) e dependentes (y)
+        X = self.df.drop(columns='Species')
+        y = self.df['Species']
+        
+        # Dados do modelo
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    def Treinamento(self):
+        # Treinamento do modelo
+        print("Treinando com o modelo de Regressão Logística...")
+        self.model = LogisticRegression(max_iter=200, random_state=42)
+        self.model.fit(self.X_train, self.y_train)
+
+    def Teste(self):
+        # previsões Do modelo treinado
+        y_pred = self.model.predict(self.X_test)
+        
+        # acurácia do modelo
+        acertos = sum(y_pred == self.y_test)
+        total = len(self.y_test)
+        acuracia = (acertos / total) * 100
+        
+        # previsões e a acurácia
+        print("Previsões do modelo de Regressão Logística:", y_pred[:5])
+        print("Valores reais:", self.y_test[:5].values)
+        print(f"Acurácia do modelo de Regressão Logística: {acuracia:.2f}%")
+
+    def Executar(self, path):
+        # etapas do modelo
+        self.CarregarDataset(path)
+        self.TratamentoDeDados()
+        self.Treinamento()
+        self.Teste()
+        print("\nFinalizando execução do modelo de Regressão Logística.")
+
+
+
+# Executando o modelo de Regressão Logística
+modelo_rl = ModeloRegressaoLogistica()
+modelo_rl.Executar(caminho_dataset)
+
+
+#Treinando com o modelo de Regressão Logística...
+Previsões do modelo de Regressão Logística: ['Iris-setosa' 'Iris-versicolor' 'Iris-setosa' 'Iris-virginica' 'Iris-setosa']
+Valores reais: ['Iris-setosa' 'Iris-versicolor' 'Iris-setosa' 'Iris-virginica' 'Iris-setosa']
+Acurácia do modelo de Regressão Logística: 97.50%
+
+Finalizando execução do modelo de Regressão Logística.
